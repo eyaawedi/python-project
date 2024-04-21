@@ -1,0 +1,23 @@
+import matplotlib.pyplot as plt
+
+# Plot predictions for Linear Regression
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test_demand, lr_preds_demand, color='blue', label='Predictions')
+plt.plot([min(y_test_demand), max(y_test_demand)], [min(y_test_demand), max(y_test_demand)], '--', color='red', label='Actual')
+plt.title('Linear Regression: Actual vs. Predicted Demand')
+plt.xlabel('Actual Demand')
+plt.ylabel('Predicted Demand')
+plt.legend()
+plt.grid(True)
+plt.show()
+
+# Plot predictions for Decision Tree
+plt.figure(figsize=(10, 6))
+plt.scatter(y_test_demand, dt_preds_demand, color='green', label='Predictions')
+plt.plot([min(y_test_demand), max(y_test_demand)], [min(y_test_demand), max(y_test_demand)], '--', color='red', label='Actual')
+plt.title('Decision Tree: Actual vs. Predicted Demand')
+plt.xlabel('Actual Demand')
+plt.ylabel('Predicted Demand')
+plt.legend()
+plt.grid(True)
+plt.show()
