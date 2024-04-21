@@ -1,0 +1,27 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Customer_Retention_Rate" sheet of the Excel file
+customer_retention_rate_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Customer_Retention_Rate')
+
+# Extract Customer Retention Rate value
+customer_retention_rate_value = customer_retention_rate_df.iloc[0, 0]
+
+# Create a card chart for Customer Retention Rate
+card_fig_customer_retention_rate = go.Figure(go.Indicator(
+    mode='number',
+    value=customer_retention_rate_value,
+    title='Customer Retention Rate',
+    number={'font': {'color': 'green', 'size': 40}},
+))
+
+# Customizing layout
+card_fig_customer_retention_rate.update_layout(
+    title='Customer Retention Rate',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the card chart
+card_fig_customer_retention_rate.show()
