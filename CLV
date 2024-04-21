@@ -1,0 +1,35 @@
+import pandas as pd
+
+# Read the Excel file into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+
+# Calculate total number of orders per customer
+total_orders_per_customer = order_df.groupby('customer_code')['order_id'].nunique()
+
+# Calculate average number of orders per customer
+average_orders_per_customer = total_orders_per_customer.mean()
+
+# Calculate average order value (AOV)
+total_revenue = order_df['total_amount'].sum()
+total_orders = order_df['order_id'].nunique()
+aov = total_revenue / total_orders
+
+# Calculate purchase frequency (PF)
+total_customers = order_df['customer_code'].nunique()
+total_orders = order_df.shape[0]
+pf = total_orders / total_customers
+
+# Estimate customer lifetime (CL) based on average orders per customer
+cl = average_orders_per_customer
+
+# Calculate CLV
+clv = aov * pf * cl
+
+# Create a DataFrame to store the CLV result
+clv_df = pd.DataFrame({'Customer Code': total_orders_per_customer.index,
+                       'CLV': clv})
+
+# Append the CLV DataFrame to the existing Excel file
+with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
+    clv_df.to_excel(writer, sheet_name='CLV', index=False)
