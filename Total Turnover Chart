@@ -1,0 +1,41 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Total_Turnover" sheet of the Excel file
+total_turnover_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Total_Turnover')
+
+# Create a Gauge chart
+gauge_fig_total_turnover = go.Figure()
+
+# Define the range of values for the Gauge chart
+min_value = total_turnover_df['Total_Turnover'].min()
+max_value = total_turnover_df['Total_Turnover'].max()
+
+# Define the value to be displayed on the Gauge chart
+latest_total_turnover_value = total_turnover_df['Total_Turnover'].iloc[-1]
+
+# Add a Gauge chart to the figure
+gauge_fig_total_turnover.add_trace(go.Indicator(
+    mode="gauge+number",
+    value=latest_total_turnover_value,
+    title={'text': "Total Turnover"},
+    gauge={'axis': {'range': [min_value, max_value]},
+           'bar': {'color': "purple"},
+           'bgcolor': "white",
+           'threshold': {
+               'line': {'color': "green", 'width': 4},
+               'thickness': 0.75,
+               'value': latest_total_turnover_value}
+           }
+))
+
+# Customizing layout
+gauge_fig_total_turnover.update_layout(
+    title='Total Turnover',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the Gauge chart
+gauge_fig_total_turnover.show()
