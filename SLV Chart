@@ -1,0 +1,38 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "SLV" sheet of the Excel file
+slv_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='SLV')
+
+# Sort the dataframe by SLV
+slv_df = slv_df.sort_values(by='SLV')
+
+# Calculate the changes in SLV
+slv_df['Change'] = slv_df['SLV'].diff().fillna(slv_df['SLV'])
+
+# Create a waterfall chart for SLV per supplier
+waterfall_fig_slv = go.Figure(go.Waterfall(
+    name="",
+    orientation="v",
+    measure=["absolute"] * len(slv_df),
+    x=slv_df['supplier_code'],
+    textposition="outside",
+    text=slv_df['SLV'],
+    y=slv_df['Change'],
+    connector={"line": {"color": "rgb(0, 128, 0)"}},
+    increasing={"marker": {"color": "rgb(0, 128, 0)"}},
+    decreasing={"marker": {"color": "rgb(255, 0, 0)"}},
+))
+
+# Customizing layout
+waterfall_fig_slv.update_layout(
+    title='Supplier Lifetime Value (SLV)',
+    xaxis_title='Supplier Code',
+    yaxis_title='SLV',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the waterfall chart
+waterfall_fig_slv.show()
