@@ -1,0 +1,33 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Pricing_Optimization_Results" sheet of the Excel file
+pricing_optimization_results_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Pricing_Optimization_Results')
+
+# Create a scatter plot for the relationship between Total Revenue and Total Commission
+scatter_fig_total_revenue_vs_commission = go.Figure()
+
+# Add trace for scatter plot
+scatter_fig_total_revenue_vs_commission.add_trace(go.Scatter(
+    x=pricing_optimization_results_df['total_revenue'],
+    y=pricing_optimization_results_df['total_commission'],
+    mode='markers',
+    marker=dict(
+        color='rgba(128, 0, 128, 0.6)',
+        size=10
+    ),
+    showlegend=False
+))
+
+# Customizing layout
+scatter_fig_total_revenue_vs_commission.update_layout(
+    title='Total Revenue vs Total Commission (pricing_optimization)',
+    xaxis_title='Total Revenue',
+    yaxis_title='Total Commission',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the scatter plot
+scatter_fig_total_revenue_vs_commission.show()
