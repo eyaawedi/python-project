@@ -1,0 +1,27 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Supplier_Conversion_Rate" sheet of the Excel file
+supplier_conversion_rate_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Supplier_Conversion_Rate')
+
+# Extract Supplier Conversion Rate value
+supplier_conversion_rate_value = supplier_conversion_rate_df.iloc[0, 0]
+
+# Create a card chart for Supplier Conversion Rate
+card_fig_supplier_conversion_rate = go.Figure(go.Indicator(
+    mode='number',
+    value=supplier_conversion_rate_value,
+    title='Supplier Conversion Rate',
+    number={'font': {'color': 'green', 'size': 40}},
+))
+
+# Customizing layout
+card_fig_supplier_conversion_rate.update_layout(
+    title='Supplier Conversion Rate',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the card chart
+card_fig_supplier_conversion_rate.show()
