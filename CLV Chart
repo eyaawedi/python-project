@@ -1,0 +1,34 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "CLV" sheet of the Excel file
+clv_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='CLV')
+
+# Sort the DataFrame by CLV in descending order and select the top 10 rows
+top_10_clv_df = clv_df.sort_values(by='CLV', ascending=False).head(15)
+
+# Create a stacked bar chart for CLV per customer using the top 10 data
+stacked_bar_fig_clv = go.Figure()
+
+# Add traces for each CLV value
+for i, row in top_10_clv_df.iterrows():
+    stacked_bar_fig_clv.add_trace(go.Bar(
+        x=[row['customer_code']],
+        y=[row['CLV']],
+        name=row['customer_code'],
+        marker_color='rgb(0, 128, 0)',
+    ))
+
+# Customizing layout
+stacked_bar_fig_clv.update_layout(
+    title='Top 10 Customer Lifetime Value (CLV)',
+    xaxis_title='Customer Code',
+    yaxis_title='CLV',
+    barmode='stack',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the stacked bar chart
+stacked_bar_fig_clv.show()
