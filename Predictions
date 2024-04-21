@@ -1,0 +1,86 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+
+# Load data from Excel file
+excel_file = "cleaned_data0.xlsx"
+tables = pd.read_excel(excel_file, sheet_name=None)
+
+# Customer Segmentation
+customer_data = tables["Customer"]
+# Perform customer segmentation analysis using customer_data
+customer_sector_distribution = customer_data["sector"].value_counts().head(10)
+customer_sector_distribution = customer_sector_distribution.sort_index()
+
+plt.figure(figsize=(8, 6))
+plt.bar(customer_sector_distribution.index, customer_sector_distribution.values, color='skyblue')
+plt.title('Top 10 Customer Sectors by Count')
+plt.xlabel('Sector')
+plt.ylabel('Number of Customers')
+plt.xticks(rotation=45)
+plt.gca().set_xticks(range(len(customer_sector_distribution.index)))
+plt.gca().set_xticklabels(customer_sector_distribution.index, rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+
+
+# Supplier Performance Analysis
+supplier_performance_data = tables["Supplier_Performance"]
+# Load supplier data to get supplier names
+supplier_data = tables["Supplier"]
+# Merge supplier names with supplier performance data
+supplier_revenue = supplier_performance_data.groupby('supplier_code')['total_revenue'].sum().nlargest(10)
+supplier_revenue = pd.merge(supplier_revenue, supplier_data[['supplier_code', 'label']], on='supplier_code')
+# Sort by total revenue
+supplier_revenue = supplier_revenue.sort_values(by='total_revenue', ascending=False)
+
+plt.figure(figsize=(10, 6))
+plt.bar(supplier_revenue['label'], supplier_revenue['total_revenue'], color='lightgreen')
+plt.title('Top 10 Suppliers by Total Revenue')
+plt.xlabel('Supplier')
+plt.ylabel('Total Revenue')
+plt.xticks(rotation=45)
+plt.gca().set_xticks(range(len(supplier_revenue['label'])))
+plt.gca().set_xticklabels(supplier_revenue['label'], rotation=45, ha='right')
+plt.tight_layout()
+plt.show()
+
+# Sales Channel Analysis
+sales_channel_data = tables["Profitability_by_Sales_Channel"]
+# Analyze sales channels using sales_channel_data
+sales_channel_revenue = sales_channel_data.groupby('sales_channel')['total_amount_x'].sum()
+plt.figure(figsize=(8, 6))
+sales_channel_revenue.plot(kind='pie', autopct='%1.1f%%', startangle=90)
+plt.title('Total Revenue by Sales Channel')
+plt.ylabel('')
+plt.show()
+
+# Inventory Optimization
+inventory_data = tables["Cart_Detail"]
+# Perform inventory optimization analysis using inventory_data
+item_quantity_distribution = inventory_data["quantity"].value_counts()
+plt.figure(figsize=(8, 6))
+item_quantity_distribution.plot(kind='hist', bins=20, color='orange')
+plt.title('Item Quantity Distribution')
+plt.xlabel('Quantity')
+plt.ylabel('Frequency')
+plt.show()
+
+# Profitability Analysis
+profitability_data = tables["Profitability"]
+# Analyze profitability using profitability_data
+plt.figure(figsize=(8, 6))
+plt.hist(profitability_data['Profit'], bins=30, color='salmon', edgecolor='black')
+plt.title('Profit Distribution')
+plt.xlabel('Profit')
+plt.ylabel('Frequency')
+plt.show()
+
+# Customer Lifetime Value (CLV) Analysis
+clv_data = tables["CLV"]
+# Calculate CLV and perform CLV analysis using clv_data
+plt.figure(figsize=(8, 6))
+plt.hist(clv_data['CLV'], bins=30, color='purple', edgecolor='black')
+plt.title('Customer Lifetime Value (CLV) Distribution')
+plt.xlabel('CLV')
+plt.ylabel('Frequency')
+plt.show()
