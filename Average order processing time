@@ -1,0 +1,20 @@
+import pandas as pd
+
+# Read the necessary Excel sheets into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+delivery_df = pd.read_excel(excel_file, sheet_name='Delivery')
+
+# Calculate the maximum order_id and delivery_id
+max_order_id = order_df['order_id'].max()
+max_delivery_id = delivery_df['delivery_id'].max()
+
+# Calculate the average order processing time
+avg_processing_time = max_delivery_id - max_order_id
+
+# Create a DataFrame with the result
+result_df = pd.DataFrame({'Average Order Processing Time': [avg_processing_time]})
+
+# Append the result to the Excel file
+with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
+    result_df.to_excel(writer, sheet_name='Average_Order_Processing_Time', index=False)
