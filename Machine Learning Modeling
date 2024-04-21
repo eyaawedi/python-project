@@ -1,0 +1,66 @@
+import pandas as pd
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import SelectKBest, f_regression
+from sklearn.linear_model import LinearRegression
+from sklearn.tree import DecisionTreeRegressor
+from sklearn.metrics import mean_squared_error
+
+# Load the Excel file
+excel_file = 'cleaned_data0.xlsx'
+excel_data = pd.read_excel(excel_file, sheet_name=None)
+
+# Define features and target for demand prediction
+demand_features = ['item_code', 'quantity']
+demand_target = 'total_amount'
+
+# Load necessary sheets for demand prediction and potential profitability estimation
+
+cart_detail = excel_data['Cart_Detail']
+item = excel_data['Item']
+cart = excel_data['Cart']
+
+    # Merge Cart_Detail with Item
+demand_data = pd.merge(cart_detail, item, on='item_code', how='inner')
+demand_data = demand_data.drop_duplicates(subset=['cart_id', 'item_code'])  # Drop duplicates if any
+
+    # Merge Cart with Demand data to include total_amount
+demand_data = pd.merge(demand_data, cart[['cart_id', 'total_amount']], on='cart_id', how='left')
+
+    # Prepare data for demand prediction
+X_demand = demand_data[demand_features]
+y_demand = demand_data[demand_target]
+
+    # Data Preprocessing for demand prediction
+scaler_demand = StandardScaler()
+X_scaled_demand = scaler_demand.fit_transform(X_demand)
+
+    # Split data into training and testing sets for demand prediction
+X_train_demand, X_test_demand, y_train_demand, y_test_demand =
+train_test_split(X_scaled_demand, y_demand, test_size=0.2, random_state=42)
+
+    # Feature Selection for demand prediction
+selector_demand = SelectKBest(score_func=f_regression, k='all')
+X_train_selected_demand = selector_demand.fit_transform(X_train_demand, y_train_demand)
+X_test_selected_demand = selector_demand.transform(X_test_demand)
+
+    # Model Selection and Hyperparameter Tuning for demand prediction
+lr_model_demand = LinearRegression()
+lr_param_grid_demand = {'fit_intercept': [True, False]}
+lr_grid_search_demand = GridSearchCV(lr_model_demand, lr_param_grid_demand, cv=5, scoring='neg_mean_squared_error')
+lr_grid_search_demand.fit(X_train_selected_demand, y_train_demand)
+
+dt_model_demand = DecisionTreeRegressor()
+dt_param_grid_demand = {'max_depth': [None, 5, 10, 20]}
+dt_grid_search_demand = GridSearchCV(dt_model_demand, dt_param_grid_demand, cv=5, scoring='neg_mean_squared_error')
+dt_grid_search_demand.fit(X_train_selected_demand, y_train_demand)
+
+    # Evaluate models for demand prediction
+lr_preds_demand = lr_grid_search_demand.best_estimator_.predict(X_test_selected_demand)
+dt_preds_demand = dt_grid_search_demand.best_estimator_.predict(X_test_selected_demand)
+
+lr_mse_demand = mean_squared_error(y_test_demand, lr_preds_demand)
+dt_mse_demand = mean_squared_error(y_test_demand, dt_preds_demand)
+
+print("Linear Regression Mean Squared Error for demand prediction:", lr_mse_demand)
+print("Decision Tree Mean Squared Error for demand prediction:", dt_mse_demand)
