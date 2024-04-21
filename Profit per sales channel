@@ -1,0 +1,36 @@
+import pandas as pd
+
+# Read the necessary Excel sheets into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+delivery_df = pd.read_excel(excel_file, sheet_name='Delivery')
+
+# Merge 'Order' with 'Delivery' to get sales channel information
+merged_df = pd.merge(order_df, delivery_df, on='order_id', how='left')
+
+# Infer sales channel from delivery address
+def infer_sales_channel(delivery_address):
+    if 'online' in delivery_address.lower():
+        return 'Online'
+    elif 'store' in delivery_address.lower():
+        return 'In Store'
+    else:
+        return 'Other'
+
+merged_df['sales_channel'] = merged_df['delivery_address'].apply(infer_sales_channel)
+
+# Calculate total revenue (sales) for each sales channel
+total_sales_channel = merged_df.groupby('sales_channel')['total_amount_x'].sum().reset_index()
+
+# Calculate total cost associated with each sales channel (including commission)
+total_cost_channel = merged_df.groupby('sales_channel')['commission'].sum().reset_index()
+
+# Merge total sales and total cost DataFrames
+profitability_channel_df = pd.merge(total_sales_channel, total_cost_channel, on='sales_channel', how='outer')
+
+# Calculate profit for each sales channel
+profitability_channel_df['Profit'] = profitability_channel_df['total_amount_x'] - profitability_channel_df['commission']
+
+# Append the profitability by sales channel DataFrame to the existing Excel file
+with pd.ExcelWriter('cleaned_data0.xlsx', mode='a', engine='openpyxl') as writer:
+    profitability_channel_df.to_excel(writer, sheet_name='Profitability_by_Sales_Channel', index=False)
