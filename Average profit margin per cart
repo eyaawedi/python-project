@@ -1,0 +1,26 @@
+import pandas as pd
+
+# Read the Excel file into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+item_df = pd.read_excel(excel_file, sheet_name='Item')
+cart_detail_df = pd.read_excel(excel_file, sheet_name='Cart_Detail')
+supplier_payment_df = pd.read_excel(excel_file, sheet_name='Supplier_Payment')
+
+# Merge 'cart_Detail' with 'Item' to get sales price
+merged_cart_df = pd.merge(cart_detail_df, item_df, on='item_code', how='left')
+
+# Merge 'Supplier_Payment' with 'Item' to get purchase price
+merged_supplier_df = pd.merge(supplier_payment_df, item_df, on='supplier_code', how='left')
+
+# Calculate the cost of goods sold
+merged_cart_df['Cost_of_Goods_Sold'] = merged_cart_df['quantity'] * merged_supplier_df['amount']
+
+# Calculate the profit margin
+merged_cart_df['Profit_Margin'] = merged_cart_df['selling_price'] - merged_cart_df['Cost_of_Goods_Sold']
+
+# Create a new DataFrame with the necessary columns
+profit_margin_df = merged_cart_df[['cart_id', 'item_code', 'Profit_Margin']]
+
+# Write the DataFrame to a new Excel file or append to the existing file
+with pd.ExcelWriter('cleaned_data0.xlsx', mode='a', engine='openpyxl') as writer:
+    profit_margin_df.to_excel(writer, sheet_name='Profit_Margin', index=False)
