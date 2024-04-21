@@ -1,0 +1,26 @@
+import pandas as pd
+
+# Read the necessary Excel sheets into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+order_detail_df = pd.read_excel(excel_file, sheet_name='Order_Detail')
+item_df = pd.read_excel(excel_file, sheet_name='Item')
+
+# Merge 'Order_Detail' with 'Item' to get product details
+merged_order_item_df = pd.merge(order_detail_df, item_df, on='item_code', how='inner')
+
+# Merge 'Order' with the merged DataFrame to get supplier details
+merged_order_supplier_df = pd.merge(order_df, merged_order_item_df, on='order_id', how='inner')
+
+# Calculate supplier performance metrics
+supplier_performance = merged_order_supplier_df.groupby('supplier_code').agg(
+    total_revenue=('total_amount', 'sum'),
+    total_commission=('commission', 'sum')
+)
+
+# Calculate profitability (revenue - commission) for each supplier
+supplier_performance['profitability'] = supplier_performance['total_revenue'] - supplier_performance['total_commission']
+
+# Save the results to a new sheet in the Excel file
+with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
+    supplier_performance.to_excel(writer, sheet_name='Supplier_Performance', index=True)
