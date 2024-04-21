@@ -1,0 +1,27 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Cart_Conversion_Rate" sheet of the Excel file
+cart_conversion_rate_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Cart_Conversion_Rate')
+
+# Extract Cart Conversion Rate value
+cart_conversion_rate_value = cart_conversion_rate_df.iloc[0, 0]
+
+# Create a card chart for Cart Conversion Rate
+card_fig_cart_conversion_rate = go.Figure(go.Indicator(
+    mode='number',
+    value=cart_conversion_rate_value,
+    title='Cart Conversion Rate',
+    number={'font': {'color': 'green', 'size': 40}},
+))
+
+# Customizing layout
+card_fig_cart_conversion_rate.update_layout(
+    title='Cart Conversion Rate',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the card chart
+card_fig_cart_conversion_rate.show()
