@@ -1,0 +1,25 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Profitability_By_Sales_Channel" sheet of the Excel file
+profitability_by_sales_channel_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Profitability_by_Sales_Channel')
+
+# Create a bar chart for profit per sales channel
+bar_fig_profit_sales_channel = go.Figure(go.Bar(
+    x=profitability_by_sales_channel_df['sales_channel'],
+    y=profitability_by_sales_channel_df['Profit'],
+    marker_color='rgb(0, 128, 0)'
+))
+
+# Customizing layout
+bar_fig_profit_sales_channel.update_layout(
+    title='Profit per Sales Channel',
+    xaxis_title='Sales Channel',
+    yaxis_title='Profit',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the bar chart
+bar_fig_profit_sales_channel.show()
