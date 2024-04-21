@@ -1,0 +1,52 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Online Sales Profitability" sheet of the Excel file
+online_sales_profitability_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Online Sales Profitability')
+
+# Extract data
+total_revenue = online_sales_profitability_df['Total Revenue'].iloc[0]
+total_costs = online_sales_profitability_df['Total Costs'].iloc[0]
+profitability = online_sales_profitability_df['Profitability'].iloc[0]
+
+# Create a horizontal bar chart for Online Sales Profitability
+bar_fig_online_sales_profitability = go.Figure()
+
+# Add traces for Total Revenue, Total Costs, and Profitability
+bar_fig_online_sales_profitability.add_trace(go.Bar(
+    y=['Total Revenue'],
+    x=[total_revenue],
+    orientation='h',
+    name='Total Revenue',
+    marker_color='rgba(0, 128, 0, 0.6)' 
+))
+
+bar_fig_online_sales_profitability.add_trace(go.Bar(
+    y=['Total Costs'],
+    x=[total_costs],
+    orientation='h',
+    name='Total Costs',
+    marker_color='rgba(0, 128, 0, 0.8)' 
+))
+
+bar_fig_online_sales_profitability.add_trace(go.Bar(
+    y=['Profitability'],
+    x=[profitability],
+    orientation='h',
+    name='Profitability',
+    marker_color='rgba(0, 128, 0, 1)' 
+))
+
+# Customizing layout
+bar_fig_online_sales_profitability.update_layout(
+    title='Online Sales Profitability',
+    xaxis_title='Amount',
+    yaxis_title=None,
+    barmode='relative',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the bar chart
+bar_fig_online_sales_profitability.show()
