@@ -1,0 +1,42 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Most Profitable Products" sheet of the Excel file
+most_profitable_products_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Most Profitable Products')
+
+# Sort the DataFrame by total_amount to get the most profitable products
+most_profitable_products_df = most_profitable_products_df.sort_values(by='total_amount', ascending=False)
+
+# Extract item codes and total amounts
+item_codes = most_profitable_products_df['item_code']
+total_amounts = most_profitable_products_df['total_amount']
+
+# Create traces for each item code
+traces = []
+for item_code in item_codes:
+    trace = go.Scatter(
+        x=[item_code],
+        y=[total_amounts[item_codes == item_code].values[0]],
+        mode='lines',
+        name=item_code,
+        stackgroup='one',
+        fill='tozeroy',
+        marker_color='rgba(0, 128, 0, 0.6)' 
+    )
+    traces.append(trace)
+
+# Create layout
+layout = go.Layout(
+    title='Most Profitable Products',
+    xaxis_title='Item Code',
+    yaxis_title='Total Amount',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Create stacked area chart
+area_fig_most_profitable_products = go.Figure(data=traces, layout=layout)
+
+# Show the stacked area chart
+area_fig_most_profitable_products.show()
