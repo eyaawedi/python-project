@@ -1,0 +1,27 @@
+import pandas as pd
+
+# Read the Excel file into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+orders_df = pd.read_excel(excel_file, sheet_name='Order')
+delivery_df = pd.read_excel(excel_file, sheet_name='Delivery')
+supplier_payment_df = pd.read_excel(excel_file, sheet_name='Supplier_Payment')
+
+# Perform calculations to determine the turnover
+# Filter orders based on order_id
+filtered_orders = orders_df[orders_df['order_id'].isin(delivery_df['order_id'])]
+
+# Calculate the total turnover
+total_turnover = filtered_orders['total_amount'].sum() - 
+supplier_payment_df[(supplier_payment_df['date'] >= period_start_date) & 
+                    (supplier_payment_df['date'] <= period_end_date)]['amount'].sum()
+
+# Create a new DataFrame for the analysis table
+analysis_df = pd.DataFrame({
+    'Period_Start_Date': ['2018-01-01'],
+    'Period_End_Date': ['2023-12-31'],
+    'Total_Turnover': [total_turnover]
+})
+
+# Append the analysis DataFrame to a specific sheet in the Excel file
+with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a') as writer:
+    analysis_df.to_excel(writer, sheet_name='Total_Turnover', index=False)
