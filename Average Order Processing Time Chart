@@ -1,0 +1,27 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Average_Order_Processing_Time" sheet of the Excel file
+avg_order_processing_time_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Average_Order_Processing_Time')
+
+# Extract Average Order Processing Time value
+avg_order_processing_time_value = avg_order_processing_time_df.iloc[0, 0]
+
+# Create a card chart for Average Order Processing Time
+card_fig_avg_order_processing_time = go.Figure(go.Indicator(
+    mode='number',
+    value=avg_order_processing_time_value,
+    title='Average Order Processing Time',
+    number={'font': {'color': 'green', 'size': 40}},
+))
+
+# Customizing layout
+card_fig_avg_order_processing_time.update_layout(
+    title='Average Order Processing Time',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the card chart
+card_fig_avg_order_processing_time.show()
