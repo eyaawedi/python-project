@@ -1,0 +1,24 @@
+import pandas as pd
+
+# Read the Excel file into pandas DataFrame
+excel_file = 'cleaned_data0.xlsx'
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+
+# Count the number of orders made by each customer
+order_counts = order_df['customer_code'].value_counts()
+
+# Count the number of customers who made purchases more than once
+repeat_customers = order_counts[order_counts > 1].count()
+
+# Calculate the total number of unique customers
+total_customers = order_df['customer_code'].nunique()
+
+# Calculate the customer retention rate
+retention_rate = (repeat_customers / total_customers) * 100
+
+# Create a DataFrame to store the result
+retention_rate_df = pd.DataFrame({'Customer Retention Rate': [retention_rate]})
+
+# Append the result to the Excel file
+with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
+    retention_rate_df.to_excel(writer, sheet_name='Customer_Retention_Rate', index=False)
