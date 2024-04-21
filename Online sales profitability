@@ -1,0 +1,29 @@
+import pandas as pd
+
+# Read the necessary Excel sheets into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+delivery_df = pd.read_excel(excel_file, sheet_name='Delivery')
+
+# Merge 'Order' with 'Delivery' to get delivery details
+merged_df = pd.merge(order_df, delivery_df, on='order_id', how='inner')
+
+# Filter for online sales based on delivery address keywords
+online_sales_df = merged_df[merged_df['delivery_address'].str.contains('online|website|internet', case=False)]
+
+# Check if online sales data is available
+if not online_sales_df.empty:
+    # Calculate total revenue from online sales
+    total_revenue = online_sales_df['total_amount'].sum()
+    # Calculate total costs associated with online sales (considering only commission)
+    total_costs = online_sales_df['commission'].sum()
+
+    # Analyze profitability of online sales
+    profitability = total_revenue - total_costs
+    
+    # Create a DataFrame to hold the results
+    profitability_df = pd.DataFrame({'Total Revenue': [total_revenue], 'Total Costs': [total_costs], 'Profitability': [profitability]})
+    
+    # Write the results to a new sheet named 'Online Sales Profitability' in the Excel file
+    with pd.ExcelWriter(excel_file, engine='openpyxl', mode='a') as writer:
+        profitability_df.to_excel(writer, sheet_name='Online Sales Profitability', index=False)
