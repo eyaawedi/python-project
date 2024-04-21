@@ -1,0 +1,22 @@
+import pandas as pd
+
+# Read the Excel file into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+cart_df = pd.read_excel(excel_file, sheet_name='Cart')
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+
+# Count the total number of carts created
+total_carts = cart_df['cart_id'].nunique()
+
+# Count the number of successful sales
+successful_sales = order_df['order_id'].nunique()
+
+# Calculate the Cart Conversion Rate
+conversion_rate = (successful_sales / total_carts) * 100
+
+# Create a DataFrame to store the result
+conversion_rate_df = pd.DataFrame({'Cart Conversion Rate': [conversion_rate]})
+
+# Append the result to the Excel file
+with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
+    conversion_rate_df.to_excel(writer, sheet_name=' Cart_Conversion_Rate', index=False)
