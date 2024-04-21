@@ -1,0 +1,29 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Profit_Margin" sheet of the Excel file
+profit_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Profit_Margin')
+
+# Calculate average profit margin per cart
+avg_profit_margin_per_cart = profit_df.groupby('cart_id')['Profit_Margin'].mean().reset_index()
+
+# Create a line chart for average profit margin per cart
+line_fig = go.Figure(go.Scatter(
+    x=avg_profit_margin_per_cart['Profit_Margin'],
+    y=avg_profit_margin_per_cart['cart_id'],
+    mode='lines',
+    line=dict(color='rgb(0, 128, 0)')  # Green color
+))
+
+# Customizing layout
+line_fig.update_layout(
+    title='Average Profit Margin Per Cart',
+    xaxis_title='Average Profit Margin',
+    yaxis_title='Cart ID',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the line chart
+line_fig.show()
