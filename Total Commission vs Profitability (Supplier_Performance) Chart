@@ -1,0 +1,28 @@
+# Create a scatter plot for Total Commission vs. Profitability
+scatter_fig_total_commission_vs_profitability = go.Figure()
+
+# Add trace for scatter plot
+scatter_fig_total_commission_vs_profitability.add_trace(go.Scatter(
+    x=supplier_performance_df['total_commission'],
+    y=supplier_performance_df['profitability'],
+    mode='markers',
+    marker=dict(
+        color='rgba(128, 0, 128, 0.6)',
+        size=10
+    ),
+    text=supplier_performance_df['supplier_code'],
+    hoverinfo='text+y+x'
+))
+
+# Customizing layout
+scatter_fig_total_commission_vs_profitability.update_layout(
+    title='Total Commission vs Profitability (Supplier_Performance)',
+    xaxis_title='Total Commission',
+    yaxis_title='Profitability',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the scatter plot
+scatter_fig_total_commission_vs_profitability.show()
