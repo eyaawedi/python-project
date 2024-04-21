@@ -1,0 +1,20 @@
+import pandas as pd
+
+# Read the necessary Excel sheets into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+order_df = pd.read_excel(excel_file, sheet_name='Order')
+payment_supplier_df = pd.read_excel(excel_file, sheet_name='Supplier_Payment')
+
+# Count the total number of unique suppliers who received payments
+total_suppliers = payment_supplier_df['supplier_code'].nunique()
+
+# Count the total number of orders placed
+total_orders = order_df['order_id'].nunique()
+
+# Calculate the Supplier Conversion Rate
+conversion_rate = (total_suppliers / total_orders) * 100
+
+# Append the result to an existing sheet or create a new sheet
+with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
+    conversion_rate_df = pd.DataFrame({'Supplier Conversion Rate': [conversion_rate]})
+    conversion_rate_df.to_excel(writer, sheet_name='Supplier_Conversion_Rate', index=False)
