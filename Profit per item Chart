@@ -1,0 +1,35 @@
+import pandas as pd
+import plotly.graph_objs as go
+
+# Load data from the "Profitability" sheet of the Excel file
+profitability_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='Profitability')
+
+# Sort the dataframe by profit
+profitability_df = profitability_df.sort_values(by='Profit')
+
+# Create a waterfall chart for profit per item
+waterfall_fig_profit = go.Figure(go.Waterfall(
+    name="",
+    orientation="v",
+    measure=["relative"] * len(profitability_df),
+    x=profitability_df['item_code'],
+    textposition="outside",
+    text=profitability_df['Profit'],
+    y=profitability_df['Profit'],
+    connector={"line": {"color": "rgb(0, 128, 0)"}},
+    increasing={"marker": {"color": "rgb(0, 128, 0)"}},
+    decreasing={"marker": {"color": "rgb(255, 0, 0)"}},
+))
+
+# Customizing layout
+waterfall_fig_profit.update_layout(
+    title='Profit per item',
+    xaxis_title='Item Code',
+    yaxis_title='Profit',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
+
+# Show the waterfall chart
+waterfall_fig_profit.show()
