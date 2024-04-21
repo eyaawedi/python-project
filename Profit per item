@@ -1,0 +1,35 @@
+import pandas as pd
+
+# Read the necessary Excel sheets into pandas DataFrames
+excel_file = 'cleaned_data0.xlsx'
+item_df = pd.read_excel(excel_file, sheet_name='Item')
+order_detail_df = pd.read_excel(excel_file, sheet_name='Order_Detail')
+delivery_df = pd.read_excel(excel_file, sheet_name='Delivery')
+
+# Merge 'Order_Detail' with 'Item' to get sales price and associated costs
+merged_df = pd.merge(order_detail_df, item_df, on='item_code', how='left')
+
+# Check if the merge was successful
+if 'total_amount' not in merged_df.columns:
+    # If 'total_amount' doesn't exist in 'merged_df', merge with 'Delivery' to get sales amount
+    merged_df = pd.merge(merged_df, delivery_df[['order_id', 'total_amount', 'commission']], on='order_id', how='left')
+
+# Check if 'total_amount' and 'commission' exist in the DataFrame
+if 'total_amount' not in merged_df.columns or 'commission' not in merged_df.columns:
+    raise KeyError("Columns 'total_amount' or 'commission' not found. Check if the merge operation was successful or if they exist in 'Delivery'.")
+
+# Calculate total revenue (sales) for each product
+total_sales = merged_df.groupby('item_code')['total_amount'].sum().reset_index()
+
+# Calculate total cost associated with each product (including commission)
+total_cost = merged_df.groupby('item_code')['commission'].sum().reset_index()
+
+# Merge total sales and total cost DataFrames
+profitability_df = pd.merge(total_sales, total_cost, on='item_code', how='outer')
+
+# Calculate profit for each product
+profitability_df['Profit'] = profitability_df['total_amount'] - profitability_df['commission']
+
+# Append the profitability DataFrame to the existing Excel file
+with pd.ExcelWriter('cleaned_data0.xlsx', mode='a', engine='openpyxl') as writer:
+    profitability_df.to_excel(writer, sheet_name='Profitability', index=False)
