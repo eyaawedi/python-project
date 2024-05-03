@@ -1,35 +1,26 @@
 import pandas as pd
+import plotly.graph_objs as go
 
-# Read the Excel file into pandas DataFrames
-excel_file = 'cleaned_data0.xlsx'
-order_df = pd.read_excel(excel_file, sheet_name='Order')
+# Load data from the "CLV" sheet of the Excel file
+clv_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='CLV')
 
-# Calculate total number of orders per customer
-total_orders_per_customer = order_df.groupby('customer_code')['order_id'].nunique()
+# Sort the DataFrame by CLV in descending order and select the top 10 rows
+top_10_clv_df = clv_df.sort_values(by='CLV', ascending=False).head(10)
 
-# Calculate average number of orders per customer
-average_orders_per_customer = total_orders_per_customer.mean()
+# Create data for the pie chart
+labels = top_10_clv_df['customer_code']
+values = top_10_clv_df['CLV']
 
-# Calculate average order value (AOV)
-total_revenue = order_df['total_amount'].sum()
-total_orders = order_df['order_id'].nunique()
-aov = total_revenue / total_orders
+# Create pie chart
+pie_fig_clv = go.Figure(data=[go.Pie(labels=labels, values=values)])
 
-# Calculate purchase frequency (PF)
-total_customers = order_df['customer_code'].nunique()
-total_orders = order_df.shape[0]
-pf = total_orders / total_customers
+# Customizing layout
+pie_fig_clv.update_layout(
+    title='Top 10 Customer Lifetime Value (CLV)',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
 
-# Estimate customer lifetime (CL) based on average orders per customer
-cl = average_orders_per_customer
-
-# Calculate CLV
-clv = aov * pf * cl
-
-# Create a DataFrame to store the CLV result
-clv_df = pd.DataFrame({'Customer Code': total_orders_per_customer.index,
-                       'CLV': clv})
-
-# Append the CLV DataFrame to the existing Excel file
-with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
-    clv_df.to_excel(writer, sheet_name='CLV', index=False)
+# Show the pie chart
+pie_fig_clv.show()
