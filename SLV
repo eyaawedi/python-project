@@ -1,29 +1,33 @@
 import pandas as pd
+import plotly.graph_objs as go
 
-# Read the Excel file into pandas DataFrames
-excel_file = 'cleaned_data0.xlsx'
-payment_supplier_df = pd.read_excel(excel_file, sheet_name='Supplier_Payment')
+# Load data from the "SLV" sheet of the Excel file
+slv_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='SLV')
 
-# Calculate total value of transactions per supplier
-total_value_per_supplier = payment_supplier_df.groupby('supplier_code')['amount'].sum()
+# Sort the dataframe by SLV and select the top 10 rows
+top_10_slv_df = slv_df.sort_values(by='SLV', ascending=False).head(10)
 
-# Calculate the average value of transactions per supplier
-average_value_per_supplier = payment_supplier_df.groupby('supplier_code')['amount'].mean()
+# Create scatter plot
+scatter_fig_slv = go.Figure(go.Scatter(
+    x=top_10_slv_df['supplier_code'],
+    y=top_10_slv_df['SLV'],
+    mode='markers',
+    marker=dict(size=12,
+                color=top_10_slv_df['SLV'], 
+                colorscale='Viridis', 
+                opacity=0.8),
+    text=top_10_slv_df['supplier_code']
+))
 
-# Calculate purchase frequency per supplier
-purchase_frequency_per_supplier = payment_supplier_df['supplier_code'].value_counts()
+# Customizing layout
+scatter_fig_slv.update_layout(
+    title='Top 10 Supplier Lifetime Value (SLV)',
+    xaxis_title='Supplier Code',
+    yaxis_title='SLV',
+    plot_bgcolor='rgba(0,0,0,0)',
+    paper_bgcolor='rgba(0,0,0,0)',
+    font=dict(color='black')
+)
 
-# Estimate the Supplier Lifetime
-average_transactions_per_supplier = payment_supplier_df.groupby('supplier_code').size().mean()
-supplier_lifetime = average_transactions_per_supplier
-
-# Calculate Supplier Lifetime Value (SLV)
-slv = total_value_per_supplier * purchase_frequency_per_supplier * supplier_lifetime
-
-# Create a DataFrame to store the SLV result
-slv_df = pd.DataFrame({'Supplier Code': total_value_per_supplier.index,
-                       'SLV': slv})
-
-# Append the FRV DataFrame to the existing Excel file
-with pd.ExcelWriter(excel_file, mode='a', engine='openpyxl') as writer:
-    slv_df.to_excel(writer, sheet_name='SLV', index=False)
+# Show the scatter chart
+scatter_fig_slv.show()
