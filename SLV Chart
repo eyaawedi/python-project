@@ -4,29 +4,24 @@ import plotly.graph_objs as go
 # Load data from the "SLV" sheet of the Excel file
 slv_df = pd.read_excel('cleaned_data0.xlsx', sheet_name='SLV')
 
-# Sort the dataframe by SLV
-slv_df = slv_df.sort_values(by='SLV')
+# Sort the dataframe by SLV and select the top 10 rows
+top_10_slv_df = slv_df.sort_values(by='SLV', ascending=False).head(10)
 
-# Calculate the changes in SLV
-slv_df['Change'] = slv_df['SLV'].diff().fillna(slv_df['SLV'])
-
-# Create a waterfall chart for SLV per supplier
-waterfall_fig_slv = go.Figure(go.Waterfall(
-    name="",
-    orientation="v",
-    measure=["absolute"] * len(slv_df),
-    x=slv_df['supplier_code'],
-    textposition="outside",
-    text=slv_df['SLV'],
-    y=slv_df['Change'],
-    connector={"line": {"color": "rgb(0, 128, 0)"}},
-    increasing={"marker": {"color": "rgb(0, 128, 0)"}},
-    decreasing={"marker": {"color": "rgb(255, 0, 0)"}},
+# Create scatter plot
+scatter_fig_slv = go.Figure(go.Scatter(
+    x=top_10_slv_df['supplier_code'],
+    y=top_10_slv_df['SLV'],
+    mode='markers',
+    marker=dict(size=12,
+                color=top_10_slv_df['SLV'], 
+                colorscale='Viridis', 
+                opacity=0.8),
+    text=top_10_slv_df['supplier_code']
 ))
 
 # Customizing layout
-waterfall_fig_slv.update_layout(
-    title='Supplier Lifetime Value (SLV)',
+scatter_fig_slv.update_layout(
+    title='Top 10 Supplier Lifetime Value (SLV)',
     xaxis_title='Supplier Code',
     yaxis_title='SLV',
     plot_bgcolor='rgba(0,0,0,0)',
@@ -34,5 +29,5 @@ waterfall_fig_slv.update_layout(
     font=dict(color='black')
 )
 
-# Show the waterfall chart
-waterfall_fig_slv.show()
+# Show the scatter chart
+scatter_fig_slv.show()
